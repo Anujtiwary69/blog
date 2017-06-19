@@ -119,14 +119,14 @@ class Controller extends BaseController
 	 public function WhoAPi($domain)
 	 {
 	 	$content =file_get_contents("http://api.bulkwhoisapi.com/whoisAPI.php?domain=$domain&token=7d3f08b98ab9f69ae15060a5b58ef1ee");
-	 	$data = json_decode($content);
+	 	return json_decode($content);
 	 }
 
 	 public function findDomain(Request $request)
 	 {
 	 	$domain = $request->input('domain');
-	 	$data = $this->WhoAPi($domain)
-	 	return view('domain',['data'=>$data]);
+	 	$data = $this->WhoAPi($domain);
+	 	return view('domain',['data'=>$data,'css'=>'go']);
 	 }
 
 

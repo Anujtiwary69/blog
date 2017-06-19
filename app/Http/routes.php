@@ -25,3 +25,4 @@ Route::get('/csv','Controller@exportToCSV');
 Route::get('/login','Controller@Login');
 Route::post('/validate','Controller@checkLogin');
 Route::get('/domain','Controller@findDomain');
+Route::get('/searchDomain','Controller@findDomain');

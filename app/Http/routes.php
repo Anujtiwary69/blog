@@ -12,8 +12,16 @@
 */
 
 Route::get('/', function () {
+	if (!Auth::check() && !Request::is('/login')) {
+           return Redirect::to('/login');
+           
+         }
     return view('welcome',['css'=>'go']);
+    
 });
 Route::post('/search','Controller@searchPost');
 Route::get('/pdf','Controller@PDFDownload');
 Route::get('/csv','Controller@exportToCSV');
+Route::get('/login','Controller@Login');
+Route::post('/validate','Controller@checkLogin');
+Route::get('/domain','Controller@findDomain');

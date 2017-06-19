@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\Redirect;
 use Maatwebsite\Excel\Facades\Excel;
+use App\users;
 
 class Controller extends BaseController
 {
@@ -18,6 +19,10 @@ class Controller extends BaseController
 
     public function searchPost(Request $request )
     {
+    	if (!Auth::check() && !Request::is('login')) {
+           return Redirect::route('login');
+
+         }
     	$search = urlencode($request->input('search')); // keyword search 
     	$combined_amzon = $this->AmazonData($search);
     	$combined_ebay = $this->EbayData($search);
@@ -95,6 +100,33 @@ class Controller extends BaseController
 		    });
 
 	    })->export('csv');
+	 }
+
+	 public function Login()
+	 {
+	 	return view('login',['css'=>'go']);
+	 }
+
+	 public function checkLogin(Request $request)
+	 {
+	 	// print_r($request->input());
+	 	// $users = users::all();
+	 	// foreach ($users as $key) {
+	 	// 	if($request->input('email')==$key->username && )
+	 	// }
+	 }
+
+	 public function WhoAPi($domain)
+	 {
+	 	$content =file_get_contents("http://api.bulkwhoisapi.com/whoisAPI.php?domain=$domain&token=7d3f08b98ab9f69ae15060a5b58ef1ee");
+	 	$data = json_decode($content);
+	 }
+
+	 public function findDomain(Request $request)
+	 {
+	 	$domain = $request->input('domain');
+	 	$data = $this->WhoAPi($domain)
+	 	return view('domain',['data'=>$data]);
 	 }
 
 

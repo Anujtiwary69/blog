@@ -8,6 +8,9 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesResources;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Support\Facades\Redirect;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Controller extends BaseController
 {
@@ -16,11 +19,9 @@ class Controller extends BaseController
     public function searchPost(Request $request )
     {
     	$search = urlencode($request->input('search')); // keyword search 
-    	// $combined_amzon = $this->AmazonData($search);
+    	$combined_amzon = $this->AmazonData($search);
     	$combined_ebay = $this->EbayData($search);
-    	echo "<pre>";
-    	print_r($combined_ebay);
-    	// return view('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay]);
+    	return view('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'go']);
     	
 
     }
@@ -33,12 +34,12 @@ class Controller extends BaseController
     	include_once 'simple_html_dom.php'; 
     	$url = "https://www.amazon.co.uk/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=$search&rh=i%3Aaps%2Ck%3A$search";
     	$html = file_get_html($url);
-    	for($i=2;$i<10;$i++){
+    	for($i=2;$i<15;$i++){
     		foreach($html->find("li[id=result_$i]") as $element):
 	    			$img =$element->find('img',0);
 	    			$list['img'] = $img->src;
 	    			$list['title'] = $element->find('h2',0)->plaintext;
-	    			$list['price'] = $element->find('div[class=a-row a-spacing-none]',2)->plaintext;
+	    			$list['price'] = $element->find('a',2)->plaintext;
 	    			$list['seller'] = $element->find('div[class=a-row a-spacing-none]',1)->plaintext;
 	    			// $list['StockLeft'] = $element->find('div[class=a-row a-spacing-none]',5)->plaintext;
 	    			$combined_amzon[] = $list;
@@ -59,7 +60,7 @@ class Controller extends BaseController
     	foreach($html->find("li[class=sresult lvresult clearfix li shic]") as $element):
 			$img =$element->find('img[class=img]',0);
 			$list['img'] = $img->src;
-			if(strpos('.gif', $list['img'])==false)
+			if(strpos($list['img'],'.gif')==false)
 			{
 				$list['title'] = $element->find('a[class=vip]',0)->plaintext;
 				$list['price'] = $element->find('span[class=bold]',0)->plaintext;
@@ -71,6 +72,31 @@ class Controller extends BaseController
 		endforeach;
 		return $combined_ebay;
     }
+
+    public function PDFDownload()
+    {
+
+    	$search = urlencode('iphone'); // keyword search 
+    	$combined_amzon = $this->AmazonData($search);
+    	$combined_ebay = $this->EbayData($search);
+    	$pdf = PDF::loadView('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
+		return $pdf->download('invoice.pdf');
+    }
+
+    
+    public function exportToCSV()
+	 {
+		Excel::create('Laravel Excel', function($excel) {
+	        $excel->sheet('Excel sheet', function($sheet) {
+		    	$search = urlencode('iphone'); // keyword search 
+		    	$combined_amzon = $this->AmazonData($search);
+		    	$combined_ebay = $this->EbayData($search);
+		        $sheet->loadView('csv', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
+		    });
+
+	    })->export('csv');
+	 }
+
 
    
 }

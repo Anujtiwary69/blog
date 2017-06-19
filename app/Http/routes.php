@@ -12,6 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('welcome',['css'=>'go']);
 });
 Route::post('/search','Controller@searchPost');
+Route::get('/pdf','Controller@PDFDownload');
+Route::get('/csv','Controller@exportToCSV');

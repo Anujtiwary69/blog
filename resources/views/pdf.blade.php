@@ -2,7 +2,6 @@
     <div class="clearfix"></div>
 
     <div class="container">
-    @if($css!='stop')
         <div class="row">
             <div class="col-sm-8">
                 <div class="">
@@ -18,12 +17,11 @@
                                 <button class="btn btn-default" type="submit" style="float: right;" >Go!</button>
                             </span>
                         </form>
-                            
+                        
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-sm-12">
                 <div class="col-sm-4">
@@ -31,15 +29,14 @@
                         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Save as
                         <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-                          <li><a href="<?php  echo url('/pdf');?>">PDF</a></li>
-                          <li><a href="<?php  echo url('/csv');?>">CSV</a></li>
+                          <li><a href="#">PDF</a></li>
+                          <li><a href="#">Excel</a></li>
                           <!-- <li><a href="#">JavaScript</a></li> -->
                         </ul>
                    </div>
                 </div>
             </div>
         </div>
-         @endif
         @if(!empty($ebay))
         <!-- /table row stars -->
         <div class="row">

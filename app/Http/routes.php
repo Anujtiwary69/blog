@@ -19,7 +19,7 @@ Route::get('/', function (Request $request) {
 Route::get('/welcome',function(){
 	  return view('welcome1',['css'=>'go']);
 });
-Route::post('/search','Controller@searchPost');
+Route::get('/search','Controller@searchPost');
 Route::get('/pdf','Controller@PDFDownload');
 Route::get('/csv','Controller@exportToCSV');
 Route::get('/login','Controller@Login');
@@ -31,3 +31,5 @@ Route::get('/csvD','Controller@exportToCSVD');
 Route::get('/product',function(){
 	  return view('welcome',['css'=>'go']);
 });
+Route::get('/save','Controller@SaveToDB');
+Route::get('/SaveD','Controller@SaveDToDB');

@@ -12,6 +12,8 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Support\Facades\Redirect;
 use Maatwebsite\Excel\Facades\Excel;
 use App\users;
+use App\ProductSearch;
+use App\Domains;
 
 class Controller extends BaseController
 {
@@ -45,7 +47,7 @@ class Controller extends BaseController
 	    			$list['img'] = $img->src;
 	    			$list['title'] = $element->find('h2',0)->plaintext;
 	    			$list['price'] = $element->find('a',2)->plaintext;
-	    			$list['seller'] = $element->find('div[class=a-row a-spacing-none]',1)->plaintext;
+	    			$list['seller'] = "by Amazon";
 	    			// $list['StockLeft'] = $element->find('div[class=a-row a-spacing-none]',5)->plaintext;
 	    			$combined_amzon[] = $list;
 	       	endforeach;
@@ -69,7 +71,7 @@ class Controller extends BaseController
 			{
 				$list['title'] = $element->find('a[class=vip]',0)->plaintext;
 				$list['price'] = $element->find('span[class=bold]',0)->plaintext;
-				$list['seller'] = "none";
+				$list['seller'] = "By Ebay";
 				// $list['StockLeft'] = $element->find('div[class=a-row a-spacing-none]',5)->plaintext;
 				$combined_ebay[] = $list;
 			}
@@ -78,22 +80,22 @@ class Controller extends BaseController
 		return $combined_ebay;
     }
 
-    public function PDFDownload()
+    public function PDFDownload(Request $request)
     {
 
-    	$search = urlencode('iphone'); // keyword search 
+    	$search = urlencode($request->input('search')); // keyword search 
     	$combined_amzon = $this->AmazonData($search);
     	$combined_ebay = $this->EbayData($search);
-    	$pdf = PDF::loadView('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
-		return $pdf->download('invoice.pdf');
+    	$pdf = PDF::loadView('welcome_pdf', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
+		return $pdf->download('Product.pdf');
     }
 
     
-    public function exportToCSV()
+    public function exportToCSV(Request $request)
 	 {
 		Excel::create('Laravel Excel', function($excel) {
 	        $excel->sheet('Excel sheet', function($sheet) {
-		    	$search = urlencode('iphone'); // keyword search 
+		    	$search = urlencode($_GET['search']); // keyword search 
 		    	$combined_amzon = $this->AmazonData($search);
 		    	$combined_ebay = $this->EbayData($search);
 		        $sheet->loadView('csv', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
@@ -114,6 +116,7 @@ class Controller extends BaseController
 	 		if($request->input('email')==$key->username && $request->input('password')== $key->password)
 	 		{
 	 			$request->session()->put('login', 'success');
+	 			$request->session()->put('User', $key->id);
 	 			return redirect('/welcome');
 
 	 		}
@@ -139,9 +142,9 @@ class Controller extends BaseController
 
 	 public function PDFDownloadD(Request $request)
 	 {
-	 	$domain = urlencode($request->input('keyword')); // keyword search 
+	 	$domain = urlencode($request->input('domain')); // keyword search 
     	$data = $this->WhoAPi($domain);
-    	$pdf = PDF::loadView('domain',['data'=>$data,'css'=>'stop']);
+    	$pdf = PDF::loadView('domainGen',['data'=>$data,'css'=>'stop']);
 		return $pdf->download('domain.pdf');
 	 }
 
@@ -149,12 +152,44 @@ class Controller extends BaseController
 	 {
 	 	Excel::create('Laravel Excel', function($excel) {
 	        $excel->sheet('Excel sheet', function($sheet) {
-		    	$domain = urlencode($_GET['keyword']); // keyword search 
+		    	$domain = urlencode($_GET['domain']); // keyword search 
 		    	$data = $this->WhoAPi($domain);
-		        $sheet->loadView('domain',['data'=>$data,'css'=>'stop']);
+		        $sheet->loadView('domainGen',['data'=>$data,'css'=>'stop']);
 		    });
 
 	    })->export('csv');
+	 }
+
+	 public function SaveToDB(Request $request)
+	 {
+	 	$user_id = $request->session()->get('User');
+	 	$search = urlencode($request->input('search'));
+	 	$combined_amzon = $this->AmazonData($search);
+    	$combined_ebay = $this->EbayData($search);
+	 	$product = new ProductSearch();
+	 	//amazon data 
+	 	foreach ($combined_amzon as $key) {
+	 		$product->insert(['image'=>$key['img'],'name'=>$key['title'],'price'=>$key['price'],'seller'=>$key['seller'],'user_id'=>$user_id]);
+	 	}
+	 	//ebay data
+	 	foreach ($combined_ebay as $key) {
+	 		$product->insert(['image'=>$key['img'],'name'=>$key['title'],'price'=>$key['price'],'seller'=>$key['seller'],'user_id'=>$user_id]);
+	 	}
+
+	 	return redirect()->back()->with('message', 'Data Saved!');
+	 	
+
+	 }
+
+	 public function SaveDToDB(Request $request)
+	 {
+	 	$user_id = $request->session()->get('User');
+	 	$search = urlencode($request->input('domain'));
+	 	$data = $this->WhoAPi($search);
+	 	$domain = new Domains();
+	 	$domain->insert(['domain'=>$search,'user_id'=>$user_id]);
+	 	
+	 	return redirect()->back()->with('message', 'Data Saved!');
 	 }
 
 

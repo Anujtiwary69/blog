@@ -1,11 +1,20 @@
-@include ('header')
-    <div class="clearfix"></div>
+@include("header")
+<body class="hold-transition skin-blue sidebar-mini">
+   
+    <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper ">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <br>
+        <br>
 
-    <div class="container">
-        @if(!empty($ebay))
+    
+      <!-- //for css -->
         <!-- /table row stars -->
-        <div class="row">
-            <table class="table table-striped">
+
+    <div class="row">
+        <div class="col-sm-8 col-md-offset-2">
+            <table class="table table-striped ">
                 <thead>
                     <tr>
                         <td>
@@ -26,7 +35,7 @@
                         @foreach ($amazon as $user)
                             <tr>
                                 <td>
-                                {{$user['img']}}
+                                   <img src="{{ $user['img']}}"> 
                                 </td>
                                 <td style=" word-wrap: break-word;">
                                 {{$user['title']}}
@@ -42,7 +51,7 @@
                         @foreach ($ebay as $user)
                             <tr>
                                 <td>
-                                   {{$user['img']}}
+                                   <img src="{{ $user['img']}}"> 
                                 </td>
                                 <td style=" word-wrap: break-word;">
                                 {{$user['title']}}
@@ -61,4 +70,7 @@
             </table>
         </div>
     </div>
+    
+    @if($css!="stop")
+        @include('jsFilesHref');
     @endif

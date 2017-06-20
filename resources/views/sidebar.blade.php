@@ -26,18 +26,18 @@
       <ul class="sidebar-menu">
         <li class="header">MAIN NAVIGATION</li>
         <li class="active treeview">
-          <a href="#">
-            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-            <span class="pull-right-container">
+          <a href="<?php echo url('/product');?>">
+            <i class="fa fa-dashboard"></i> <span>Product Search</span>
+            <!-- <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
-            </span>
+            </span> -->
           </a>
           <li class="treeview">
             <a href="#">
-              <i class="fa fa-share"></i> <span>Multilevel</span>
-              <span class="pull-right-container">
+              <i class="fa fa-share"></i> <span>Domain Search</span>
+              <!-- <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
-              </span>
+              </span> -->
             </a>
           </li>
       </ul>

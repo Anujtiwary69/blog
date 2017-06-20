@@ -28,3 +28,6 @@ Route::get('/domain','Controller@findDomain');
 Route::get('/searchDomain','Controller@findDomain');
 Route::get('/pdfD','Controller@PDFDownloadD');
 Route::get('/csvD','Controller@exportToCSVD');
+Route::get('/product',function(){
+	  return view('welcome',['css'=>'go']);
+});

@@ -11,13 +11,13 @@
 |
 */
 
-Route::get('/', function () {
-	if (!Auth::check() && !Request::is('/login')) {
-           return Redirect::to('/login');
-           
-         }
-    return view('welcome',['css'=>'go']);
+Route::get('/', function (Request $request) {
+
+    return view('login',['css'=>'go']);
     
+});
+Route::get('/welcome',function(){
+	  return view('welcome',['css'=>'go']);
 });
 Route::post('/search','Controller@searchPost');
 Route::get('/pdf','Controller@PDFDownload');
@@ -26,3 +26,5 @@ Route::get('/login','Controller@Login');
 Route::post('/validate','Controller@checkLogin');
 Route::get('/domain','Controller@findDomain');
 Route::get('/searchDomain','Controller@findDomain');
+Route::get('/pdfD','Controller@PDFDownloadD');
+Route::get('/csvD','Controller@exportToCSVD');

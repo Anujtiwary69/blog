@@ -1,4 +1,9 @@
 @include('header')
+<?php 
+if(!isset($_REQUEST['domain']))
+{
+    $_REQUEST['domain'] = '';
+}?>
 <div class="container">
     @if($css!='stop')
         <div class="row">
@@ -21,7 +26,7 @@
                 </div>
             </div>
         </div>
-
+         @if(!empty($data))
         <div class="row">
             <div class="col-sm-12">
                 <div class="col-sm-4">
@@ -29,16 +34,17 @@
                         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Save as
                         <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-                          <li><a href="<?php  echo url('/pdf');?>">PDF</a></li>
-                          <li><a href="<?php  echo url('/csv');?>">CSV</a></li>
-                          <!-- <li><a href="#">JavaScript</a></li> -->
+                          <li><a href="<?php  echo url('/pdfD?keyword='.$_REQUEST['domain']);?>">PDF</a></li>
+                          <li><a href="<?php  echo url('/csvD?keyword='.$_REQUEST['domain']);?>">CSV</a></li>
                         </ul>
                    </div>
                 </div>
             </div>
         </div>
+        @endif
          @endif
          <br>
+         @if(!empty($data))
          <div class="row">
          	<div class="col-sm-12">
          	<table class="table table-striped">
@@ -65,3 +71,4 @@
          	
          </div>
          </div>
+         @endif

@@ -19,10 +19,10 @@ class Controller extends BaseController
 
     public function searchPost(Request $request )
     {
-    	if (!Auth::check() && !Request::is('login')) {
-           return Redirect::route('login');
+    	// if ($request->session()->get('key')!='success') {
+     //       return Redirect::route('login');
 
-         }
+     //     }
     	$search = urlencode($request->input('search')); // keyword search 
     	$combined_amzon = $this->AmazonData($search);
     	$combined_ebay = $this->EbayData($search);
@@ -109,11 +109,19 @@ class Controller extends BaseController
 
 	 public function checkLogin(Request $request)
 	 {
-	 	// print_r($request->input());
-	 	// $users = users::all();
-	 	// foreach ($users as $key) {
-	 	// 	if($request->input('email')==$key->username && )
-	 	// }
+	 	$users = users::all();
+	 	foreach ($users as $key) {
+	 		if($request->input('email')==$key->username && $request->input('password')== $key->password)
+	 		{
+	 			$request->session()->put('login', 'success');
+	 			return redirect('/welcome');
+
+	 		}
+	 		else
+	 		{
+	 			return Redirect::back()->withErrors(['Incoorect username and password', 'The Message']);
+	 		}
+	 	}
 	 }
 
 	 public function WhoAPi($domain)
@@ -127,6 +135,26 @@ class Controller extends BaseController
 	 	$domain = $request->input('domain');
 	 	$data = $this->WhoAPi($domain);
 	 	return view('domain',['data'=>$data,'css'=>'go']);
+	 }
+
+	 public function PDFDownloadD(Request $request)
+	 {
+	 	$domain = urlencode($request->input('keyword')); // keyword search 
+    	$data = $this->WhoAPi($domain);
+    	$pdf = PDF::loadView('domain',['data'=>$data,'css'=>'stop']);
+		return $pdf->download('domain.pdf');
+	 }
+
+	 public function exportToCSVD(Request $request)
+	 {
+	 	Excel::create('Laravel Excel', function($excel) {
+	        $excel->sheet('Excel sheet', function($sheet) {
+		    	$domain = urlencode($_GET['keyword']); // keyword search 
+		    	$data = $this->WhoAPi($domain);
+		        $sheet->loadView('domain',['data'=>$data,'css'=>'stop']);
+		    });
+
+	    })->export('csv');
 	 }
 
 

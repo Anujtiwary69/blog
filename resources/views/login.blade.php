@@ -4,6 +4,9 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
     <center>
+    @if($errors->any())
+		<h4 style="color: red;">{{$errors->first()}}</h4>
+	@endif
       <form id="signin" class="navbar-form navbar-center" role="form" action="<?php echo url('/validate');?>" method="post">
             <div class="input-group">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>

@@ -26,7 +26,7 @@ class Controller extends BaseController
     	$search = urlencode($request->input('search')); // keyword search 
     	$combined_amzon = $this->AmazonData($search);
     	$combined_ebay = $this->EbayData($search);
-    	return view('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'go']);
+    	return view('welcome1', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'go']);
     	
 
     }
@@ -104,7 +104,7 @@ class Controller extends BaseController
 
 	 public function Login()
 	 {
-	 	return view('login',['css'=>'go']);
+	 	return view('login/login',['css'=>'go']);
 	 }
 
 	 public function checkLogin(Request $request)

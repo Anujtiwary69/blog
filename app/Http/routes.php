@@ -13,11 +13,11 @@
 
 Route::get('/', function (Request $request) {
 
-    return view('login',['css'=>'go']);
+    return view('login/login',['css'=>'go']);
     
 });
 Route::get('/welcome',function(){
-	  return view('welcome',['css'=>'go']);
+	  return view('welcome1',['css'=>'go']);
 });
 Route::post('/search','Controller@searchPost');
 Route::get('/pdf','Controller@PDFDownload');

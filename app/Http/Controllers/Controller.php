@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\users;
 use App\ProductSearch;
 use App\Domains;
+use Parsehub\Parsehub;
 
 class Controller extends BaseController
 {
@@ -26,7 +27,7 @@ class Controller extends BaseController
 
      //     }
     	$search = urlencode($request->input('search')); // keyword search 
-    	$combined_amzon = $this->AmazonData($search);
+    	$combined_amzon = $this->CheckAPI();
     	$combined_ebay = $this->EbayData($search);
     	return view('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'go']);
     	
@@ -106,11 +107,13 @@ class Controller extends BaseController
 
 	 public function Login()
 	 {
+
 	 	return view('login/login',['css'=>'go']);
 	 }
 
 	 public function checkLogin(Request $request)
 	 {
+
 	 	$users = users::all();
 	 	foreach ($users as $key) {
 	 		if($request->input('email')==$key->username && $request->input('password')== $key->password)
@@ -175,7 +178,6 @@ class Controller extends BaseController
 	 	foreach ($combined_ebay as $key) {
 	 		$product->insert(['image'=>$key['img'],'name'=>$key['title'],'price'=>$key['price'],'seller'=>$key['seller'],'user_id'=>$user_id]);
 	 	}
-
 	 	return redirect()->back()->with('message', 'Data Saved!');
 	 	
 
@@ -190,6 +192,76 @@ class Controller extends BaseController
 	 	$domain->insert(['domain'=>$search,'user_id'=>$user_id]);
 	 	
 	 	return redirect()->back()->with('message', 'Data Saved!');
+	 }
+
+
+	 public function CheckAPI(Request $request)
+	 {
+	 	$api_key = "txotmiiRkdsi";
+	 	$parsehub = new Parsehub($api_key);
+		$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		$project_token = $array->projects[0]->last_ready_run->project_token;
+		$run_token = $array->projects[0]->last_ready_run->run_token;
+		$start_url = $array->projects[0]->last_ready_run->start_url;
+		echo "<pre>";
+		// print_r($array);
+		// $parsehub = new Parsehub($api_key);
+		$options = array(
+		    // Skip start_url option if don't want to override starting url configured
+		    // on parsehub.
+		    'start_url' => 'https://www.amazon.co.uk/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=hp',
+		    // Enter comma separated list of keywords to pass into `start_value_override`
+		    'keywords' => 'iphone case, iphone copy',
+		    // Set send_email options. Skip to remain this value default.
+		    // 'send_email' => 1,
+		);
+		// $run_obj = $parsehub->runProject($project_token, $options);
+		// $project_data = json_decode($run_obj);
+		// $request->session()->put('Rundata', $project_data);
+
+		
+
+		// $parsehub = new Parsehub($api_key);
+		// $cancel = $parsehub->cancelProjectRun($project_data->run_token);
+		// $data = $parsehub->getLastReadyRunData($project_data->project_token);
+		// // $run = $parsehub->getRun($run_token);
+		// // print $run;
+		// $array_main = json_decode($data);
+		// print_r($array_main);
+		// $item = array();
+		// $all_item = array();
+		// $total =  count($array_main->title);
+		// for($i=0;$i<70;$i++)
+		// {
+		// 	$item['title'] = $array_main->title[$i]->name;
+		// 	$item['img'] = $array_main->images[$i]->name;
+		// 	$item['price'] = $array_main->price[$i]->name;
+		// 	$item['seller'] = $array_main->seller[$i]->name;
+		//  $all_item[]=$item;
+		// }
+		// return $all_item;
+		// print_r($all_item);
+		echo "<pre>";
+		// print_r($request->session()->get('Rundata'));
+		$this->CancelProject($request);
+
+	 }
+
+	 public function CancelProject($request)
+	 {
+	 	$project=$request->session()->get('Rundata');
+	 	print_r($project->run_token);
+	 	$api_key = "txotmiiRkdsi";
+	 	$parsehub = new Parsehub($api_key);
+	 	$cancel = $parsehub->cancelProjectRun($project->run_token);
+	 	$cancel_data = json_decode($cancel);
+	 	$request->session()->put('CancelData',$cancel_data);
+	 	$Cancel_project=$request->session()->get('CancelData');
+	 	$Cancel_project->run_token;
+	 	$data = $parsehub->getLastReadyRunData($project->run_token);
+		$array_main = json_decode($data);
+		print_r($array_main);
 	 }
 
 

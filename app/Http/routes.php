@@ -33,3 +33,5 @@ Route::get('/product',function(){
 });
 Route::get('/save','Controller@SaveToDB');
 Route::get('/SaveD','Controller@SaveDToDB');
+Route::get('/api','Controller@CheckAPI');
+

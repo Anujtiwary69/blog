@@ -27,21 +27,38 @@ class Controller extends BaseController
 
      //     }
     	echo "<pre>";
+<<<<<<< HEAD
     	$search = urlencode($request->input('search')); // keyword search 
     	$combined_amzon = $this->AmazonData($search,$url=null,$loop=0);
     	print_r($combined_amzon);
     	// $combined_ebay = $this->EbayData($search);
+=======
+    	$combined_amzon = array();
+    	$search = urlencode($request->input('search')); // keyword search .
+    	// $url = "https://www.amazon.co.uk/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=$search&rh=i%3Aaps%2Ck%3A$search";
+    	// $combined_amzon = $this->AmazonData($search,$url);
+    	// // print_r($combined_amzon);
+    	
+    	
+    	$combined_ebay = $this->EbayData($search);
+    	print_r($combined_ebay);    
+>>>>>>> d2ca7d7c159c17d1ae6eba6000a761881145dd18
     	// return view('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'go']);
     	
 
     }
 
+<<<<<<< HEAD
     public function AmazonData($search,$url=null,$loop)
+=======
+    public function AmazonData($search,$url1)
+>>>>>>> d2ca7d7c159c17d1ae6eba6000a761881145dd18
     {
     	$list = array(); // declare
-    	$combined_amzon = array(); // declare
+    	// $combined_amzon = array(); // declare
     	$combined_ebay = array();// delecalre
     	include_once 'simple_html_dom.php'; 
+<<<<<<< HEAD
     	if($url==null)
     	{
     		$url = "https://www.amazon.co.uk/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=$search&rh=i%3Aaps%2Ck%3A$search";
@@ -91,27 +108,71 @@ class Controller extends BaseController
 	    {
 	    	return $combined_amzon;
 	    }
+=======
+    	// echo $url1;
+
+    	$html = file_get_html($url1);
+    	// for($i=2;$i<15;$i++){
+    		foreach($html->find("li[class=s-result-item celwidget]") as $element):
+	    			$img =$element->find('img',0);
+	    			$list['img'] = $img->src;
+	    			$list['title'] = $element->find('h2',0)->plaintext;
+	    			// echo $element->find('a',3)->plaintext;
+	    			
+	    			for($i=0;$i<5;$i++)
+	    			{
+	    				if(trim(strpos($element->find('a',$i)->plaintext,'£'))==True)
+		    			{
+		    				$list['price'] = $element->find('a',$i)->plaintext;
+		    				break;
+		    			}
+	    			}
+	    			//for seeler
+	    			for($i=0;$i<10;$i++)
+	    			{
+	    				if(trim($element->find('span',$i)->plaintext)=="by")
+		    			{
+		    				$list['seller'] = $element->find('span',$i+1)->plaintext;
+		    				break;
+		    			}
+	    			}
+	    			$combined_amzon[] = $list;
+	       	endforeach;
+	       	// print_r($combined_amzon);
+	       	// unset($combined_amzon);
+	    //    	$combined_amzon = array();
+	    // $NextPage_url = $html->find('a[id=pagnNextLink]',0)->href;
+	    // if($NextPage_url!=""){
+	    // 	 $url = "https://www.amazon.co.uk".$NextPage_url;
+	    // 	$this->AmazonData($search,$url);
+	    // } else {
+	    // 	return $combined_amzon;
+	    // }
+	    	         
+	    return $combined_amzon;
+	    
+>>>>>>> d2ca7d7c159c17d1ae6eba6000a761881145dd18
     }
+
+
 
     public function EbayData($search)
     {
     	$list = array(); // declare
     	$combined_ebay = array();// delecalre
     	include_once 'simple_html_dom.php'; 
-    	$url = "https://www.ebay.co.uk/sch/i.html?_from=R40&_trksid=p2380057.m570.l1313.TR12.TRC2.A0.H0.Xipad.TRS0&_nkw=$search&_sacat=0";
+    	echo $url = "https://www.ebay.co.uk/sch/i.html?_from=R40&_trksid=p2380057.m570.l1313.TR12.TRC2.A0.H0.Xipad.TRS0&_nkw=$search&_sacat=0";
     	$html = file_get_html($url);
-    	$all_text= $html->find("li[class=sresult lvresult clearfix li shic]",0)->plaintext; 
+    	// sleep(20);
     	foreach($html->find("li[class=sresult lvresult clearfix li shic]") as $element):
-			$img =$element->find('img[class=img]',0);
-			$list['img'] = $img->src;
-			if(strpos($list['img'],'.gif')==false)
-			{
+			$img =$element->find('img',0);
+			$list['img'] = $img->imgurl;
+			// if(strpos($list['img'],'.gif')==false)
 				$list['title'] = $element->find('a[class=vip]',0)->plaintext;
-				$list['price'] = $element->find('span[class=bold]',0)->plaintext;
+				$list['price'] = trim($element->find('span[class=bold]',0)->plaintext);
 				$list['seller'] = "By Ebay";
 				// $list['StockLeft'] = $element->find('div[class=a-row a-spacing-none]',5)->plaintext;
 				$combined_ebay[] = $list;
-			}
 			
 		endforeach;
 		return $combined_ebay;

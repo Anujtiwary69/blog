@@ -28,70 +28,69 @@ class Controller extends BaseController
      //     }
     	echo "<pre>";
     	$search = urlencode($request->input('search')); // keyword search 
-    	$combined_amzon1[] = $this->AmazonData($search,$url=null,$loop=0);
-    	// echo $combined_amzon[0][0];
-	    // $combined_amzon2[] = $this->AmazonData($search,"/s/ref=sr_pg_2/259-8210584-5885911?rh=i%3Aaps%2Ck%3Aiphone&page=2&keywords=iphone&ie=UTF8&qid=1498072061&spIA=B00QXS8TDS,B01IKAKQ64,B01FCUJ89Q,B06XV9D9FB",$loop=0);
-	 
-    	print_r($combined_amzon1);
-    	// print_r($combined_amzon2);
-    	
+    	$combined_amzon = $this->AmazonData($search,$url=null,$loop=0);
+    	print_r($combined_amzon);
     	// $combined_ebay = $this->EbayData($search);
     	// return view('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'go']);
     	
 
     }
 
-    public function AmazonData($search,$url1,$loop)
+    public function AmazonData($search,$url=null,$loop)
     {
     	$list = array(); // declare
     	$combined_amzon = array(); // declare
     	$combined_ebay = array();// delecalre
     	include_once 'simple_html_dom.php'; 
-    	if($url1==null)
+    	if($url==null)
     	{
     		$url = "https://www.amazon.co.uk/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=$search&rh=i%3Aaps%2Ck%3A$search";
-    		// echo __LINE__;
     	}
     	else
     	{
-    	  echo $url = "https://www.amazon.co.uk".$url1;
-    	  // echo __LINE__;
+    		echo $url = "https://www.amazon.co.uk/".$url;
     	}
     	
     	$html = file_get_html($url);
-    	// for($i=2;$i<15;$i++){
-    		foreach($html->find("li[class=s-result-item celwidget]") as $element):
+    	for($i=2;$i<15;$i++){
+    		foreach($html->find("li[id=result_$i]") as $element):
 	    			$img =$element->find('img',0);
 	    			$list['img'] = $img->src;
 	    			$list['title'] = $element->find('h2',0)->plaintext;
-	    			$list['price'] = $element->find('a',3)->plaintext;
+	    			$list['price'] = $element->find('a',2)->plaintext;
 	    			// $list['seller'] = "by Amazon";
-	    			for($i=0;$i<10;$i++)
-	    			{
-	    				echo __LINE__;
-	    				if(strpos($element->find('span',$i)->plaintext,'by')==false)
-		    			{
-		    				$list['seller'] = $element->find('span',$i)->plaintext;
-		    				break;
-		    			}
-	    			}
-	    			
-	    			
-
-	    			$combined_amzon[] = $list;
+	    			// $list['StockLeft'] = $element->find('span[class=a-size-small a-color-secondary]',1)->plaintext;
+	    			// $combined_amzon[] = $list;
 	       	endforeach;
-
+	       	print_r($combined_amzon);
 	    	
-	    // }
-
+	    }
+	    if(isset($loop))
+	    	{
+	    		$loop+=1;
+	    	}
+	    	else
+	    	{
+	    		$loop=1;
+	    	}
 	    $NextPage_url = $html->find('a[id=pagnNextLink]',0)->href;
-	    $return_valaue =  array($NextPage_url,$combined_amzon);
-	    // $combined_amzon = array();
-	    unset($combined_amzon);
-	    unset($list);
-	    return $return_valaue;
-	    unset($return_valaue);
-	    
+	    if($NextPage_url!="")
+	    {   
+		    if($loop > 10)
+		    {
+		    	return $combined_amzon;
+		    }
+		    else
+		    {
+		    	$combined_amzon[] = $this->AmazonData($search,$NextPage_url,$loop);
+		    	
+		    }
+		    	
+		    }
+	    else
+	    {
+	    	return $combined_amzon;
+	    }
     }
 
     public function EbayData($search)

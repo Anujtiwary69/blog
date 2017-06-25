@@ -159,6 +159,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
         Weidner\Goutte\GoutteServiceProvider::class,
+        Ixudra\Curl\CurlServiceProvider::class,
 
     ],
 
@@ -209,6 +210,7 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Goutte' => Weidner\Goutte\GoutteFacade::class,
+        'Curl'   => Ixudra\Curl\Facades\Curl::class
 
     ],
 

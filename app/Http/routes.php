@@ -41,4 +41,5 @@ Route::get('/result','Controller@finalresult');
 Route::get('/addSearch','Controller@addSearch');
 Route::post('/aproject','Controller@addProjectToDB');
 Route::get('/productListing','Controller@GetproductListing');
+Route::get('/apiWho','Controller@WhosAPi_new');
 

@@ -65,7 +65,7 @@
                           @if($project->status==1)
                             {{$page}}
                           @else
-                           {{$project->page}}
+                           {{$project->page}  }
                            @endif
                         </td>
                         <td>

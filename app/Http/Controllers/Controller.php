@@ -16,6 +16,7 @@ use App\ProductSearch;
 use App\Domains;
 use Parsehub\Parsehub;
 use App\projects;
+use Ixudra\Curl\Facades\Curl;
 
 class Controller extends BaseController
 {
@@ -33,7 +34,7 @@ class Controller extends BaseController
     		if($data!='no')
     		{
     			$projects->where('id',$Get->id)->update(['status'=>2,'page'=>$this->getOnGoingProjectPageInfo()]);
-    			
+
     			// $id = $projects->where(['status'=>0])->first();
 		    	// $projects->where('id',$id->id)->update(['status'=>1]);
 		    	// $search = urlencode($id->keyword); // keyword search 
@@ -134,10 +135,9 @@ class Controller extends BaseController
     public function PDFDownload(Request $request)
     {
 
-    	$search = urlencode($request->input('search')); // keyword search 
-    	$combined_ebay = $this->getLastRundata(1);
-    	$combined_amzon = $this->getLastRundata(2);
-    	$pdf = PDF::loadView('welcome_pdf', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
+    	$projects = new ProductSearch();
+    	$data = $projects->where('project_id',$request->input('id'))->get();
+    	$pdf = PDF::loadView('welcome_amazon', ['amazon' => $data,'css'=>'stop','i'=>0]);
 		return $pdf->download('Product.pdf');
     }
 
@@ -146,10 +146,10 @@ class Controller extends BaseController
 	 {
 		Excel::create('Laravel Excel', function($excel) {
 	        $excel->sheet('Excel sheet', function($sheet) {
-		    	$search = urlencode($_GET['search']); // keyword search 
-		    	$combined_ebay = $this->getLastRundata(1);
-    			$combined_amzon = $this->getLastRundata(2);
-		        $sheet->loadView('csv', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
+		    	$projects = new ProductSearch();
+		    	$request = new Request();
+    			$data = $projects->where('project_id',$request->input('id'))->get();
+		        $sheet->loadView('csv', ['amazon' => $data,'css'=>'stop','i'=>0]);
 		    });
 
 	    })->export('csv');
@@ -183,22 +183,35 @@ class Controller extends BaseController
 
 	 public function WhoAPi($domain)
 	 {
-	 	$content =file_get_contents("http://api.bulkwhoisapi.com/whoisAPI.php?domain=$domain&token=7d3f08b98ab9f69ae15060a5b58ef1ee");
-	 	return json_decode($content);
+	 	$response = Curl::to("https://api-2445581410012.apicast.io/v5/recommend?apikey=ca3d19b94e0eb24596c36487a053b28d&q=".$domain)
+        ->get();
+	 	return json_decode($response);
+	 	// return $response;
 	 }
 
 	 public function findDomain(Request $request)
 	 {
 	 	$domain = $request->input('domain');
 	 	$data = $this->WhoAPi($domain);
+	 
 	 	return view('domain',['data'=>$data,'css'=>'go']);
 	 }
 
+	 public function WhosAPi_new(Request $request)
+	 {
+	 	$domain = $request->input('domain');
+	 	$content =file_get_contents("http://api.bulkwhoisapi.com/whoisAPI.php?domain=$domain&token=7d3f08b98ab9f69ae15060a5b58ef1ee");
+	 	$data =  json_decode($content);
+	 	return $data->raw_data;
+	 }
+
+
+
 	 public function PDFDownloadD(Request $request)
 	 {
-	 	$domain = urlencode($request->input('domain')); // keyword search 
+	 	$domain = $request->input('domain'); // keyword search 
     	$data = $this->WhoAPi($domain);
-    	$pdf = PDF::loadView('domainGen',['data'=>$data,'css'=>'stop']);
+    	$pdf = PDF::loadView('domain_export',['data'=>$data,'css'=>'stop']);
 		return $pdf->download('domain.pdf');
 	 }
 
@@ -208,7 +221,7 @@ class Controller extends BaseController
 	        $excel->sheet('Excel sheet', function($sheet) {
 		    	$domain = urlencode($_GET['domain']); // keyword search 
 		    	$data = $this->WhoAPi($domain);
-		        $sheet->loadView('domainGen',['data'=>$data,'css'=>'stop']);
+		        $sheet->loadView('domain_export',['data'=>$data,'css'=>'stop']);
 		    });
 
 	    })->export('csv');

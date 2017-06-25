@@ -1,4 +1,4 @@
-@if($css!=stop)
+
 @include("header")
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -56,9 +56,9 @@
                         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Save as
                         <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-                          <li><a href="<?php  echo url('/pdf');?>">PDF</a></li>
-                          <li><a href="<?php  echo url('/csv');?>">CSV</a></li>
-                          <li><a href="<?php  echo url('/save');?>">Saves</a></li>
+                          <li><a href="<?php  echo url('/pdf?id='.$_GET['id']);?>">PDF</a></li>
+                          <li><a href="<?php  echo url('/csv?id='.$_GET['id']);?>">CSV</a></li>
+    
                           <!-- <li><a href="#">JavaScript</a></li> -->
                         </ul>
                    <!-- </div> -->
@@ -67,10 +67,9 @@
         </div>
       <!-- //for css -->
         <!-- /table row stars -->
-        @endif;
-        <div class="row" style="" id="tabledata">
+        <div class="row" style="" id="tabledata" >
         <div class="col-sm-10 col-md-offset-1">
-            <table class="table table-striped ">
+            <table class="table table-striped "  style="max-height: 10%;">
                 <thead>
                     <tr>
                         <td>

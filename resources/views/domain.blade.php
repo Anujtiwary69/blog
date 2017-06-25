@@ -24,7 +24,7 @@
 <div class="container">
     @if($css!='stop')
         <div class="row">
-            <div class="col-sm-8">
+            <div class="col-sm-8 col-md-offset-2">
                 <div class="">
                     <div class="clearfix"></div>
                     <br>
@@ -44,8 +44,8 @@
             </div>
         </div>
          @if(!empty($data))
-        <div class="row" id="action" style="display: none;">
-            <div class="col-sm-8">
+        <div class="row" id="action" >
+            <div class="col-sm-8 col-md-offset-2">
                 <div class=>
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Save as
@@ -53,7 +53,6 @@
                         <ul class="dropdown-menu">
                           <li><a href="<?php  echo url('/pdfD?'.$_SERVER['QUERY_STRING']);?>">PDF</a></li>
                           <li><a href="<?php  echo url('/csvD?'.$_SERVER['QUERY_STRING']);?>">CSV</a></li>
-                          <li><a href="<?php  echo url('/SaveD?'.$_SERVER['QUERY_STRING']);?>">Save</a></li>
                         </ul>
                    </div>
                 </div>
@@ -68,37 +67,75 @@
             </div>
         @endif
         <br>
-         <div class="overlay" style="font-size: 162px;text-align: center;">
-              <i class="fa fa-refresh fa-spin"></i>
-        </div>
+
          
 
          @if(!empty($data))
-         <div class="row" id="tabledata" style="display: none;">
-         	<div class="col-sm-8">
+         <div class="row" id="tabledata">
+         	<div class="col-sm-8 col-md-offset-2">
          	<table class="table table-striped table-bordered">
-            <tr>
-                <td>Domain</td>
-                <td>Status</td>
-                <td>Info</td>
-            </tr>
+            <tr class="info">
+                <td><b>Domain</b></td>
+                <td><b>Status</b></td>
+                <td><b>Info</b></td>
+                @foreach($data as $domainInfo)
+                </tr>
+                    <td id="domaintrext">{{$domainInfo->Domain}}</td>
+                    <td>
+                        
+                           <i class="fa fa-check" aria-hidden="true" style="color: green;"></i> <b style="color: green;">Available</b>
+                    </td>
+                    <td>
+                        <i class="fa fa-eye" aria-hidden="true" style="color: blue;"></i> &nbsp; <a href="#" title="{{$domainInfo->Domain}}" class="view"><b style="color: blue;" >View</b></a>
+                    </td>
 	         	<tr>
-	         		<td><h3><?php echo $_REQUEST['domain'];?></h3></td>
-	         		<td>
-	         			@if($data->raw_data!='')
-	         				<h3 style="color: green;">Available</h3>
-	         			@else
-	         				<h3 style="color: red;">Not Available</h3>
-	         			@endif
-	         		</td>
-	         		<td>
-	         		{{substr($data->raw_data, 0, 100)}}
-	         		</td>
-	         		</tr>
+                <div class="modal fade" id="myModal" role="dialog">
+                    <div class="modal-dialog">
+                    
+                      <!-- Modal content-->
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title" class="domainText11">Info</h4>
+                        </div>
+                        <div class="modal-body">
+                          <p class="domainInfo">Loading...</p>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                      
+                    </div>
+                  </div>
+  
+</div>
+
+                @endforeach
+	         		
+	         	</tr>
          	</table>
          	</div>
          	
          </div>
          </div>
          @endif
-         @include("jsFilesHref")
+
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript">
+      $(document).ready(function(){
+        $(".view").click(function(e){
+           domain = $(this).attr('title');
+           $(".domainText11").val(domain);
+            $(".domainInfo").html('Loading...');
+           url = "<?php echo url('/apiWho?domain=');?>";
+             $.ajax({url: url+domain, success: function(result){
+                $(".domainInfo").html(result);
+            }});
+
+             $("#myModal").modal('show');
+         });
+       
+      });
+  </script>

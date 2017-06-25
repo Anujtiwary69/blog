@@ -1,3 +1,4 @@
+@if($css!=stop)
 @include("header")
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
@@ -32,7 +33,7 @@
                             <br>
                             <br>
                             <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit" style="float: right;" >Go!</button>
+                                <button class="btn btn-default" id="searchButton" type="submit" style="float: right;" >Go!</button>
                             </span>
                         </form>
                             
@@ -47,34 +48,34 @@
                 {{ session()->get('message') }}
             </div>
         @endif
-        @if(!empty($ebay))
-        <div class="row" style="display: none;" id="action">
+       
+        <div class="row" style="" id="action">
             <div class="col-sm-12">
                 <!-- <div class="col-sm-4"> -->
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Save as
                         <span class="caret"></span></button>
                         <ul class="dropdown-menu">
-                          <li><a href="<?php  echo url('/pdf?'.$_SERVER['QUERY_STRING']);?>">PDF</a></li>
-                          <li><a href="<?php  echo url('/csv?'.$_SERVER['QUERY_STRING']);?>">CSV</a></li>
-                          <li><a href="<?php  echo url('/save?'.$_SERVER['QUERY_STRING']);?>">Saves</a></li>
+                          <li><a href="<?php  echo url('/pdf');?>">PDF</a></li>
+                          <li><a href="<?php  echo url('/csv');?>">CSV</a></li>
+                          <li><a href="<?php  echo url('/save');?>">Saves</a></li>
                           <!-- <li><a href="#">JavaScript</a></li> -->
                         </ul>
                    <!-- </div> -->
                 </div>
             </div>
         </div>
-       <div class="overlay" style="font-size: 162px;text-align: center;">
-              <i class="fa fa-refresh fa-spin"></i>
-            </div>
       <!-- //for css -->
         <!-- /table row stars -->
-
-        <div class="row" style="display: none;" id="tabledata">
-        <div class="col-sm-8 col-md-offset-2">
+        @endif;
+        <div class="row" style="" id="tabledata">
+        <div class="col-sm-10 col-md-offset-1">
             <table class="table table-striped ">
                 <thead>
                     <tr>
+                        <td>
+                            Sr.no
+                        </td>
                         <td>
                             Image
                         </td>
@@ -87,48 +88,47 @@
                         <td>
                             Seller
                         </td>
+                        <td>
+                        description
+                        </td>
                     </tr>
                     <tbody>
-                       
-                        @foreach ($amazon as $user)
-                            <tr>
-                                <td>
-                                   <img src="{{ $user['img']}}"> 
-                                </td>
-                                <td style=" word-wrap: break-word;">
-                                {{$user['title']}}
-                                </td>
-                                <td>
-                                    {{$user['price']}}
-                                </td>
-                                <td>
-                                  {{$user['seller']}}
-                                </td>
-                            </tr>
+                
+                        
+                       @foreach ($amazon as $user)
+
+                    
+                        
+                        <tr>
+                            <td>{{$i+=1}} </td>
+
+                            <td>
+                               <img src="{{ $user->image}}"> 
+                            </td>
+                            <td style=" word-wrap: break-word;">
+                            {{$user->name}}
+                            </td>
+                            <td>
+                                {{$user->price}}
+                            </td>
+                            <td>
+                              {{$user['seller']}}
+                            </td>
+                            <td>
+                              {{$user['des']}}
+                            </td>
+                        </tr>
                         @endforeach
-                        @foreach ($ebay as $user)
-                            <tr>
-                                <td>
-                                   <img src="{{ $user['img']}}"> 
-                                </td>
-                                <td style=" word-wrap: break-word;">
-                                {{$user['title']}}
-                                </td>
-                                <td>
-                                    {{$user['price']}}
-                                </td>
-                                <td>
-                                  {{$user['seller']}}
-                                </td>
-                            </tr>
-                        @endforeach
+                    </tbody>
+                    <tbody>
                        
                     </tbody>
+                    
                 </thead>
             </table>
         </div>
     </div>
-    @endif
+    
     @if($css!="stop")
-        @include('jsFilesHref');
+        @include('jsFilesHref')
     @endif

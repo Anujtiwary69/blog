@@ -15,6 +15,7 @@ use App\users;
 use App\ProductSearch;
 use App\Domains;
 use Parsehub\Parsehub;
+use App\projects;
 
 class Controller extends BaseController
 {
@@ -22,168 +23,120 @@ class Controller extends BaseController
 
     public function searchPost(Request $request )
     {
-    	// if ($request->session()->get('key')!='success') {
-     //       return Redirect::route('login');
-
-     //     }
-    	echo "<pre>";
-<<<<<<< HEAD
-    	$search = urlencode($request->input('search')); // keyword search 
-    	$combined_amzon = $this->AmazonData($search,$url=null,$loop=0);
-    	print_r($combined_amzon);
-    	// $combined_ebay = $this->EbayData($search);
-=======
-    	$combined_amzon = array();
-    	$search = urlencode($request->input('search')); // keyword search .
-    	// $url = "https://www.amazon.co.uk/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=$search&rh=i%3Aaps%2Ck%3A$search";
-    	// $combined_amzon = $this->AmazonData($search,$url);
-    	// // print_r($combined_amzon);
-    	
-    	
-    	$combined_ebay = $this->EbayData($search);
-    	print_r($combined_ebay);    
->>>>>>> d2ca7d7c159c17d1ae6eba6000a761881145dd18
-    	// return view('welcome', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'go']);
-    	
-
-    }
-
-<<<<<<< HEAD
-    public function AmazonData($search,$url=null,$loop)
-=======
-    public function AmazonData($search,$url1)
->>>>>>> d2ca7d7c159c17d1ae6eba6000a761881145dd18
-    {
-    	$list = array(); // declare
-    	// $combined_amzon = array(); // declare
-    	$combined_ebay = array();// delecalre
-    	include_once 'simple_html_dom.php'; 
-<<<<<<< HEAD
-    	if($url==null)
+    	$projects = new projects();
+    	$Get = $projects->where(['status'=>1])->first();
+    	if(isset($Get->id))
     	{
-    		$url = "https://www.amazon.co.uk/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=$search&rh=i%3Aaps%2Ck%3A$search";
-    	}
-    	else
-    	{
-    		echo $url = "https://www.amazon.co.uk/".$url;
-    	}
-    	
-    	$html = file_get_html($url);
-    	for($i=2;$i<15;$i++){
-    		foreach($html->find("li[id=result_$i]") as $element):
-	    			$img =$element->find('img',0);
-	    			$list['img'] = $img->src;
-	    			$list['title'] = $element->find('h2',0)->plaintext;
-	    			$list['price'] = $element->find('a',2)->plaintext;
-	    			// $list['seller'] = "by Amazon";
-	    			// $list['StockLeft'] = $element->find('span[class=a-size-small a-color-secondary]',1)->plaintext;
-	    			// $combined_amzon[] = $list;
-	       	endforeach;
-	       	print_r($combined_amzon);
+
+    		$data = $this->AmazonData($Get->id);
+    		// $data1 = $this->EbayData($Get->id);
+    		if($data!='no')
+    		{
+    			$projects->where('id',$Get->id)->update(['status'=>2,'page'=>$this->getOnGoingProjectPageInfo()]);
+    			
+    			// $id = $projects->where(['status'=>0])->first();
+		    	// $projects->where('id',$id->id)->update(['status'=>1]);
+		    	// $search = urlencode($id->keyword); // keyword search 
+		    	// $this->initilizeProject($search);
+		    	// $this->amazonSearch($search);
+		    	// $this->initilizeProjectEbay($search);
+    		}
+    		else
+    		{
+    			echo "still running.";
+    		}
+    	} else {
+    		$id = $projects->where(['status'=>0])->first();
+    		if(isset($id->id))
+    		{
+    			$projects->where('id',$id->id)->update(['status'=>1]);
+		    	$search = urlencode($id->keyword); // keyword search 
+			    	$this->amazonSearch($search);
+			    	$this->initilizeProject($search);
+    		}
+    		else
+    		{
+    			echo "Nothing found";
+    		}
 	    	
-	    }
-	    if(isset($loop))
-	    	{
-	    		$loop+=1;
-	    	}
-	    	else
-	    	{
-	    		$loop=1;
-	    	}
-	    $NextPage_url = $html->find('a[id=pagnNextLink]',0)->href;
-	    if($NextPage_url!="")
-	    {   
-		    if($loop > 10)
-		    {
-		    	return $combined_amzon;
-		    }
-		    else
-		    {
-		    	$combined_amzon[] = $this->AmazonData($search,$NextPage_url,$loop);
-		    	
-		    }
-		    	
-		    }
-	    else
-	    {
-	    	return $combined_amzon;
-	    }
-=======
-    	// echo $url1;
+    	}
+    	
+    	
 
-    	$html = file_get_html($url1);
-    	// for($i=2;$i<15;$i++){
-    		foreach($html->find("li[class=s-result-item celwidget]") as $element):
-	    			$img =$element->find('img',0);
-	    			$list['img'] = $img->src;
-	    			$list['title'] = $element->find('h2',0)->plaintext;
-	    			// echo $element->find('a',3)->plaintext;
-	    			
-	    			for($i=0;$i<5;$i++)
-	    			{
-	    				if(trim(strpos($element->find('a',$i)->plaintext,'£'))==True)
-		    			{
-		    				$list['price'] = $element->find('a',$i)->plaintext;
-		    				break;
-		    			}
-	    			}
-	    			//for seeler
-	    			for($i=0;$i<10;$i++)
-	    			{
-	    				if(trim($element->find('span',$i)->plaintext)=="by")
-		    			{
-		    				$list['seller'] = $element->find('span',$i+1)->plaintext;
-		    				break;
-		    			}
-	    			}
-	    			$combined_amzon[] = $list;
-	       	endforeach;
-	       	// print_r($combined_amzon);
-	       	// unset($combined_amzon);
-	    //    	$combined_amzon = array();
-	    // $NextPage_url = $html->find('a[id=pagnNextLink]',0)->href;
-	    // if($NextPage_url!=""){
-	    // 	 $url = "https://www.amazon.co.uk".$NextPage_url;
-	    // 	$this->AmazonData($search,$url);
-	    // } else {
-	    // 	return $combined_amzon;
-	    // }
-	    	         
-	    return $combined_amzon;
-	    
->>>>>>> d2ca7d7c159c17d1ae6eba6000a761881145dd18
+    			
+    		
+    	
+    	
+    	
+
     }
 
-
-
-    public function EbayData($search)
+    public function addSearch()
     {
-    	$list = array(); // declare
-    	$combined_ebay = array();// delecalre
-    	include_once 'simple_html_dom.php'; 
-    	echo $url = "https://www.ebay.co.uk/sch/i.html?_from=R40&_trksid=p2380057.m570.l1313.TR12.TRC2.A0.H0.Xipad.TRS0&_nkw=$search&_sacat=0";
-    	$html = file_get_html($url);
-    	// sleep(20);
-    	foreach($html->find("li[class=sresult lvresult clearfix li shic]") as $element):
-			$img =$element->find('img',0);
-			$list['img'] = $img->imgurl;
-			// if(strpos($list['img'],'.gif')==false)
-				$list['title'] = $element->find('a[class=vip]',0)->plaintext;
-				$list['price'] = trim($element->find('span[class=bold]',0)->plaintext);
-				$list['seller'] = "By Ebay";
-				// $list['StockLeft'] = $element->find('div[class=a-row a-spacing-none]',5)->plaintext;
-				$combined_ebay[] = $list;
-			
-		endforeach;
-		return $combined_ebay;
+    	return view('addSearch',['css'=>'go']);
+    }
+    public function addProjectToDB(Request $request)
+    {
+
+    	$projects = new projects();
+    	$projects->insert(['name'=>$request->input('pname'),'keyword'=>urlencode($request->input('pkeyword')),'des'=>$request->input('des')]);
+    	return redirect()->back()->with('message', 'Project Data Saved!');
+    }
+    public function GetproductListing()
+    {
+    	$projects =  projects::all();
+    	return view('productListing',['projects'=>$projects,'css'=>'go','page'=>$this->getOnGoingProjectPageInfo()]);
     }
 
+    public function finalresult(Request $request)
+    {
+    	$projects = new ProductSearch();
+    	$data = $projects->where('project_id',$request->input('id'))->get();
+    	return view('welcome', ['amazon'=>$data,'css'=>'go','i'=>0]);
+    }
+
+    public function AmazonData($id)
+    {
+    	if($this->getEndTime(0)!="" && $this->getEndTime(1)!="")
+    		{    
+    			$combined_amzon = $this->getLastRundata(0,$id);
+    			return $combined_amzon;
+
+    			// $combined_amzon = $this->getLastRundata(2);
+
+    			// return view('welcome_amazon', ['amazon' => $combined_amzon]);
+    			// break;
+    		}
+    		else
+    		{
+    			return "no";
+    			// exit();
+    		}
+    }
+
+    public function EbayData($id)
+    {
+    	if($this->getEndTime(1)!="" && $this->getEndTime(1)!="")
+    		{    
+    			$combined_ebay = $this->getLastRundata(1,$id);
+    			// $combined_amzon = $this->getLastRundata(2);
+    			return view('welcome_ebay', ['ebay' => $combined_ebay]);
+    			// break;
+    		}
+    		else
+    		{
+    			return "no";
+    			// exit();
+    		}
+    }
+
+    
     public function PDFDownload(Request $request)
     {
 
     	$search = urlencode($request->input('search')); // keyword search 
-    	$combined_amzon = $this->AmazonData($search);
-    	$combined_ebay = $this->EbayData($search);
+    	$combined_ebay = $this->getLastRundata(1);
+    	$combined_amzon = $this->getLastRundata(2);
     	$pdf = PDF::loadView('welcome_pdf', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
 		return $pdf->download('Product.pdf');
     }
@@ -194,8 +147,8 @@ class Controller extends BaseController
 		Excel::create('Laravel Excel', function($excel) {
 	        $excel->sheet('Excel sheet', function($sheet) {
 		    	$search = urlencode($_GET['search']); // keyword search 
-		    	$combined_amzon = $this->AmazonData($search);
-		    	$combined_ebay = $this->EbayData($search);
+		    	$combined_ebay = $this->getLastRundata(1);
+    			$combined_amzon = $this->getLastRundata(2);
 		        $sheet->loadView('csv', ['amazon' => $combined_amzon,'ebay'=>$combined_ebay,'css'=>'stop']);
 		    });
 
@@ -211,6 +164,7 @@ class Controller extends BaseController
 	 public function checkLogin(Request $request)
 	 {
 
+	 	
 	 	$users = users::all();
 	 	foreach ($users as $key) {
 	 		if($request->input('email')==$key->username && $request->input('password')== $key->password)
@@ -292,74 +246,223 @@ class Controller extends BaseController
 	 }
 
 
-	 public function CheckAPI(Request $request)
+	 public function CheckAPI()
+	 {
+	 	$request = new Request();
+	 	$api_key = "txotmiiRkdsi";
+	 	$parsehub = new Parsehub($api_key);
+		$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		// $project_token = $array->projects[0]->last_ready_run->project_token;
+		$run_token = $array->projects[0]->last_run->run_token;
+		// $start_url = $array->projects[0]->last_ready_run->start_url;
+		// $cancel = $parsehub->cancelProjectRun($run_token);
+		echo "<pre>";
+		print_r($array);
+		
+
+	 }
+
+	 public function CancelProject($i)
+	 {
+	 	// $project=$request->session()->get('Rundata');
+	 	$api_key = "txotmiiRkdsi";
+	 	$parsehub = new Parsehub($api_key);
+	 	$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		$run_token = $array->projects[0]->last_run->run_token;
+	 	$cancel = $parsehub->cancelProjectRun($run_token);
+	 	$cancel_data = json_decode($cancel);
+	 	
+	 }
+
+	 public function getEndTime($i)
 	 {
 	 	$api_key = "txotmiiRkdsi";
 	 	$parsehub = new Parsehub($api_key);
 		$projectList = $parsehub->getProjectList();
 		$array = json_decode($projectList);
-		$project_token = $array->projects[0]->last_ready_run->project_token;
-		$run_token = $array->projects[0]->last_ready_run->run_token;
-		$start_url = $array->projects[0]->last_ready_run->start_url;
-		echo "<pre>";
+		// echo "<pre>";
 		// print_r($array);
+		return $array->projects[$i]->last_ready_run->end_time;
+	 }
+
+	 public function getLastRundata($a,$id)
+	 {
+	 	// echo 4;
+	 	$api_key = "txotmiiRkdsi";
+	 	$total = 0;
+	 	$item = array();
+		$all_item = array();
+	 	$parsehub = new Parsehub($api_key);
+		$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		$project_token = $array->projects[$a]->last_ready_run->project_token;
+		$run_token = $array->projects[$a]->last_ready_run->run_token;
+		$start_url = $array->projects[$a]->last_ready_run->start_url;
+		$data = $parsehub->getLastReadyRunData($project_token);
+		$array_main = json_decode($data);
+		$total = min(array(count($array_main->title),count($array_main->price),count($array_main->img),count($array_main->seller),count($array_main->des)));
+		if(!isset($array_main->title))
+		{
+			$project_token = $array->projects[1]->last_ready_run->project_token;
+			$run_token = $array->projects[1]->last_ready_run->run_token;
+			$start_url = $array->projects[1]->last_ready_run->start_url;
+			$data = $parsehub->getLastReadyRunData($project_token);
+			$array_main = json_decode($data);
+			$total = min(array(count($array_main->title),count($array_main->price),count($array_main->img),count($array_main->seller),count($array_main->des)));
+		}
+		// echo 1;
+		// $des= "";
+		 // foreach($array_main->des[100]->descrip as $key):
+			// 	$des.=$key.",";
+		 // endforeach;
+		 // print_r($des);
+		// echo "<pre>";
+		$description = "";
+		// echo $total;
+		// echo "<br>";
+		// $i=100;
+		// var_dump((array)$array_main->des[100]->descrip);
+		for($i=0;$i<$total;$i++)
+		{
+			echo $i;
+			echo "<br>";
+			$item['title'] = $array_main->title[$i]->name;
+			$item['seller'] = "by ".$array_main->seller[$i]->name;	
+			$item['price'] = $array_main->price[$i]->name;
+			$item['img'] = $array_main->img[$i]->name;
+		 	// $item['des'] = implode(',', $array_main->des[$i]->descrip);
+		 	if(!empty($array_main->des[$i]->descrip))
+		 	{
+		 		$count_d=count($array_main->des[$i]->descrip);
+		 	}
+		 	else
+		 	{
+		 		$count_d = 0;
+		 	}
+			for($j=1;$j<$count_d;$j++)
+		 	{
+		 		$description.=$array_main->des[$i]->descrip[$j]->name;
+		 	}
+		 	$product = new ProductSearch();
+		 	$product->insert(['image'=>$item['img'],'name'=>$item['title'],'price'=>$item['price'],'seller'=>$item['seller'],'project_id'=>$id,'des'=>$description]);
+		 	$description = "";
+		 	// echo "<pre>";
+		 	// print_r($item);
+		}
+
+// $array_main->seller[$i]->name
+		return $all_item;
+	 }
+
+	 public function initilizeProject($search)
+	 {
+	 	$api_key = "txotmiiRkdsi";
+	 	$parsehub = new Parsehub($api_key);
+		$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		$project_token = $array->projects[1]->last_ready_run->project_token;
+		$run_token = $array->projects[1]->last_ready_run->run_token;
+		$start_url = $array->projects[1]->last_ready_run->start_url;
 		// $parsehub = new Parsehub($api_key);
+
 		$options = array(
 		    // Skip start_url option if don't want to override starting url configured
 		    // on parsehub.
-		    'start_url' => 'https://www.amazon.co.uk/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=hp',
+		    'start_url' => "https://www.amazon.co.uk/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=$search",
 		    // Enter comma separated list of keywords to pass into `start_value_override`
 		    'keywords' => 'iphone case, iphone copy',
 		    // Set send_email options. Skip to remain this value default.
 		    // 'send_email' => 1,
 		);
-		// $run_obj = $parsehub->runProject($project_token, $options);
-		// $project_data = json_decode($run_obj);
-		// $request->session()->put('Rundata', $project_data);
-
-		
-
-		// $parsehub = new Parsehub($api_key);
-		// $cancel = $parsehub->cancelProjectRun($project_data->run_token);
-		// $data = $parsehub->getLastReadyRunData($project_data->project_token);
-		// // $run = $parsehub->getRun($run_token);
-		// // print $run;
-		// $array_main = json_decode($data);
-		// print_r($array_main);
-		// $item = array();
-		// $all_item = array();
-		// $total =  count($array_main->title);
-		// for($i=0;$i<70;$i++)
-		// {
-		// 	$item['title'] = $array_main->title[$i]->name;
-		// 	$item['img'] = $array_main->images[$i]->name;
-		// 	$item['price'] = $array_main->price[$i]->name;
-		// 	$item['seller'] = $array_main->seller[$i]->name;
-		//  $all_item[]=$item;
-		// }
-		// return $all_item;
-		// print_r($all_item);
-		echo "<pre>";
-		// print_r($request->session()->get('Rundata'));
-		$this->CancelProject($request);
-
+		$run_obj = $parsehub->runProject($project_token, $options);
 	 }
 
-	 public function CancelProject($request)
+	 
+	 public function initilizeProjectEbay($search)
 	 {
-	 	$project=$request->session()->get('Rundata');
-	 	print_r($project->run_token);
+
 	 	$api_key = "txotmiiRkdsi";
 	 	$parsehub = new Parsehub($api_key);
-	 	$cancel = $parsehub->cancelProjectRun($project->run_token);
-	 	$cancel_data = json_decode($cancel);
-	 	$request->session()->put('CancelData',$cancel_data);
-	 	$Cancel_project=$request->session()->get('CancelData');
-	 	$Cancel_project->run_token;
-	 	$data = $parsehub->getLastReadyRunData($project->run_token);
-		$array_main = json_decode($data);
-		print_r($array_main);
+		$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		$project_token = $array->projects[1]->last_ready_run->project_token;
+		$run_token = $array->projects[1]->last_ready_run->run_token;
+		$start_url = $array->projects[1]->last_ready_run->start_url;
+		// $parsehub = new Parsehub($api_key);
+
+		$options = array(
+		    // Skip start_url option if don't want to override starting url configured
+		    // on parsehub.
+		    'start_url' => "https://www.ebay.co.uk/sch/i.html?_from=R40&_nkw=$search&_sacat=0&_fsrp=1&_pgn=1",
+		    // Enter comma separated list of keywords to pass into `start_value_override`
+		    'keywords' => 'iphone case, iphone copy',
+		    // Set send_email options. Skip to remain this value default.
+		    // 'send_email' => 1,
+		);
+		$run_obj = $parsehub->runProject($project_token, $options);
 	 }
+
+	 public function amazonSearch($search)
+	 {
+	 	$api_key = "txotmiiRkdsi";
+	 	$parsehub = new Parsehub($api_key);
+		$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		$project_token = $array->projects[0]->last_run->project_token;
+		$run_token = $array->projects[0]->last_run->run_token;
+		$start_url = $array->projects[0]->last_run->start_url;
+		// $parsehub = new Parsehub($api_key);
+
+		$options = array(
+		    // Skip start_url option if don't want to override starting url configured
+		    // on parsehub.
+		    'start_url' => "https://www.amazon.co.uk/s/ref=nb_sb_noss_2?url=search-alias%3Daps&field-keywords=$search",
+		    // Enter comma separated list of keywords to pass into `start_value_override`
+		    'keywords' => 'iphone case, iphone copy',
+		    // Set send_email options. Skip to remain this value default.
+		    // 'send_email' => 1,
+		);
+		$run_obj = $parsehub->runProject($project_token, $options);
+	 }
+
+	 public function GetProjectDetail()
+	 {
+	 	$i=0;
+	 	$api_key = "txotmiiRkdsi";
+	 	$parsehub = new Parsehub($api_key);
+		$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		echo "<pre>";
+		$project_token = $array->projects[$i]->last_run->project_token;
+		$run_token = $array->projects[$i]->last_run->run_token;
+		$start_url = $array->projects[$i]->last_run->start_url;
+		$data = $parsehub->getLastReadyRunData($project_token);
+		$array_main = json_decode($data);
+		// echo "<pre>";
+		print_r($array_main);
+
+	 }
+	 public function getOnGoingProjectPageInfo()
+	 {
+
+	 	$api_key = "txotmiiRkdsi";
+	 	$parsehub = new Parsehub($api_key);
+		$projectList = $parsehub->getProjectList();
+		$array = json_decode($projectList);
+		
+		// // $project_token = $array->projects[$i]->last_run->project_token;
+		// // $run_token = $array->projects[$i]->last_run->run_token;
+		// // $start_url = $array->projects[$i]->last_run->start_url;
+		// // $data = $parsehub->getLastReadyRunData($project_token);
+		// // $array_main = json_decode($data);
+		// echo "<pre>";
+		// print_r($array);
+		return $array->projects[0]->last_run->pages + $array->projects[1]->last_run->pages;
+	 }
+
+
 
 
    

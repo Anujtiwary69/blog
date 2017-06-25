@@ -11,7 +11,7 @@
 		            // $("#div1").html(result);
 			            if(result=='no')
 			            {
-			            	alert();
+			            	// alert();
 			            }
 			            else
 			            {

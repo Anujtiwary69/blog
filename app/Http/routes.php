@@ -34,4 +34,11 @@ Route::get('/product',function(){
 Route::get('/save','Controller@SaveToDB');
 Route::get('/SaveD','Controller@SaveDToDB');
 Route::get('/api','Controller@CheckAPI');
+Route::get('/proDetail','Controller@GetProjectDetail');
+Route::get('/amazonData','Controller@AmazonData');
+Route::get('ebayData','Controller@EbayData');
+Route::get('/result','Controller@finalresult');
+Route::get('/addSearch','Controller@addSearch');
+Route::post('/aproject','Controller@addProjectToDB');
+Route::get('/productListing','Controller@GetproductListing');
 

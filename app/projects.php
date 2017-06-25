@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProductSearch extends Model
+class projects extends Model
 {
     //
-    protected $table = 'product-search';
+    protected $table ="projects";
     public $timestamps = false;
 }

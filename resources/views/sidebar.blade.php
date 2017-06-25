@@ -26,12 +26,21 @@
       <ul class="sidebar-menu">
         <!-- <li class="header">MAIN NAVIGATION</li> -->
         <li class="active treeview">
-          <a href="<?php echo url('/product');?>">
-            <i class="fa fa-dashboard"></i> <span>Product Search</span>
+          <a href="<?php echo url('/addSearch');?>">
+            <i class="fa fa-dashboard"></i> <span>Add Product</span>
             <!-- <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span> -->
           </a>
+          </li>
+          <li class="active treeview">
+          <a href="<?php echo url('/productListing');?>">
+            <i class="fa fa-dashboard"></i> <span>Product Manage</span>
+            <!-- <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span> -->
+          </a>
+          </li>
           <li class="treeview">
             <a href="<?php echo url('/domain');?>">
               <i class="fa fa-share"></i> <span>Domain Search</span>

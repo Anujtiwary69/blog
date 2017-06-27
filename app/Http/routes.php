@@ -11,11 +11,7 @@
 |
 */
 
-Route::get('/', function (Request $request) {
-
-    return view('login/login',['css'=>'go']);
-    
-});
+Route::get('/','Controller@Login');
 Route::get('/welcome',function(){
 	  return view('welcome1',['css'=>'go']);
 });
@@ -42,4 +38,5 @@ Route::get('/addSearch','Controller@addSearch');
 Route::post('/aproject','Controller@addProjectToDB');
 Route::get('/productListing','Controller@GetproductListing');
 Route::get('/apiWho','Controller@WhosAPi_new');
+Route::get('/logout','Controller@LogoutUser');
 

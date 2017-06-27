@@ -2,21 +2,9 @@
 
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-
-  <header class="main-header">
-    <!-- Logo -->
-    <a href="index2.html" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>A</b>LT</span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Admin</b>LTE</span>
-    </a>
-    <!-- Header Navbar: style can be found in header.less -->
     @include('nav')
-  </header>
   <!-- Left side column. contains the logo and sidebar -->
     @include('sidebar')
-   
     <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper ">
     <!-- Content Header (Page header) -->

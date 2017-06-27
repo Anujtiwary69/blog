@@ -17,13 +17,15 @@ use App\Domains;
 use Parsehub\Parsehub;
 use App\projects;
 use Ixudra\Curl\Facades\Curl;
+use Illuminate\Support\Facades\Log;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
 
-    public function searchPost(Request $request )
+    public function searchPost()
     {
+    	$request  = new Request();
     	$projects = new projects();
     	$Get = $projects->where(['status'=>1])->first();
     	if(isset($Get->id))
@@ -44,7 +46,8 @@ class Controller extends BaseController
     		}
     		else
     		{
-    			echo "still running.";
+    			// echo "still running.";
+    			Log::info('still running');
     		}
     	} else {
     		$id = $projects->where(['status'=>0])->first();
@@ -54,10 +57,14 @@ class Controller extends BaseController
 		    	$search = urlencode($id->keyword); // keyword search 
 			    	$this->amazonSearch($search);
 			    	$this->initilizeProject($search);
+			    	Log::info('Started here');
+
     		}
     		else
     		{
-    			echo "Nothing found";
+    			// echo "Nothing found";
+    			Log::info('Nothing found');
+    			// Log::info('Showing user profile for user: ');
     		}
 	    	
     	}
@@ -85,6 +92,7 @@ class Controller extends BaseController
     }
     public function GetproductListing()
     {
+    	// $this->searchPost();
     	$projects =  projects::all();
     	return view('productListing',['projects'=>$projects,'css'=>'go','page'=>$this->getOnGoingProjectPageInfo()]);
     }
@@ -92,7 +100,9 @@ class Controller extends BaseController
     public function finalresult(Request $request)
     {
     	$projects = new ProductSearch();
-    	$data = $projects->where('project_id',$request->input('id'))->get();
+    	$id = $request->input('id');
+    	$data = $projects->where('project_id',$request->input('id'))->paginate(15);
+    	$data =  $data->appends(['id'=>$id]);
     	return view('welcome', ['amazon'=>$data,'css'=>'go','i'=>0]);
     }
 
@@ -117,7 +127,7 @@ class Controller extends BaseController
 
     public function EbayData($id)
     {
-    	if($this->getEndTime(1)!="" && $this->getEndTime(1)!="")
+    	if($this->getEndTime(1)!="" && $this->getEndTime(0)!="")
     		{    
     			$combined_ebay = $this->getLastRundata(1,$id);
     			// $combined_amzon = $this->getLastRundata(2);
@@ -155,30 +165,42 @@ class Controller extends BaseController
 	    })->export('csv');
 	 }
 
-	 public function Login()
+	 public function Login(Request $request)
 	 {
+	 	// $request->session()->get('login')
+	
+	 	if ($request->session()->get('login')!='success'):
+	 		return view('login/login',['css'=>'go']);
+	 	else:
+	 		return redirect('/welcome');
+	 	endif;
+	 }
 
-	 	return view('login/login',['css'=>'go']);
+	 public function LogoutUser(Request $request)
+	 {
+	 	$request->session()->flush();
+	 	return redirect('/login');
 	 }
 
 	 public function checkLogin(Request $request)
 	 {
 
 	 	
-	 	$users = users::all();
-	 	foreach ($users as $key) {
-	 		if($request->input('email')==$key->username && $request->input('password')== $key->password)
-	 		{
-	 			$request->session()->put('login', 'success');
-	 			$request->session()->put('User', $key->id);
-	 			return redirect('/welcome');
+		 	$users = users::all();
+		 	foreach ($users as $key) {
+		 		if($request->input('email')==$key->username && $request->input('password')== $key->password)
+		 		{
+		 			$request->session()->put('login', 'success');
+		 			$request->session()->put('User', $key->id);
+		 			return redirect('/welcome');
 
-	 		}
-	 		else
-	 		{
-	 			return Redirect::back()->withErrors(['Incoorect username and password', 'The Message']);
-	 		}
-	 	}
+		 		}
+		 		else
+		 		{
+		 			return Redirect::back()->withErrors(['Incoorect username and password', 'The Message']);
+		 		}
+		 	}
+	 	
 	 }
 
 	 public function WhoAPi($domain)
@@ -297,7 +319,7 @@ class Controller extends BaseController
 		$array = json_decode($projectList);
 		// echo "<pre>";
 		// print_r($array);
-		return $array->projects[$i]->last_ready_run->end_time;
+		return $array->projects[$i]->last_run->end_time;
 	 }
 
 	 public function getLastRundata($a,$id)

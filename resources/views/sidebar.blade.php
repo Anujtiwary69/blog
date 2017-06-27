@@ -49,6 +49,14 @@
               </span> -->
             </a>
           </li>
+          <li class="treeview">
+            <a href="<?php echo url('/logout');?>">
+              <i class="fa fa-sign-out" aria-hidden="true"></i> <span>Logout</span>
+              <!-- <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span> -->
+            </a>
+          </li>
       </ul>
     </section>
     <!-- /.sidebar -->

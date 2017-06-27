@@ -1,19 +1,7 @@
 @include("header")
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
-
-  <header class="main-header">
-    <!-- Logo -->
-    <a href="index2.html" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>A</b>LT</span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Admin</b>LTE</span>
-    </a>
-    <!-- Header Navbar: style can be found in header.less -->
     @include('nav')
-  </header>
-  <!-- Left side column. contains the logo and sidebar -->
     @include('sidebar')
    
     <!-- Content Wrapper. Contains page content -->
@@ -65,7 +53,7 @@
                           @if($project->status==1)
                             {{$page}}
                           @else
-                           {{$project->page}  }
+                           {{$project->page}}
                            @endif
                         </td>
                         <td>
@@ -93,6 +81,10 @@
         $("#timer").text(60-counter);
         if(counter==60)
         {
+           url = "<?php echo url('/search');?>";
+          $.ajax({url: url, success: function(result){
+            // $("#div1").html(result);
+          }});
           location.reload();
           clearInterval(interval1);  
         }

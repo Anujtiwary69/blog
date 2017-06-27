@@ -3,17 +3,10 @@
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
-  <header class="main-header">
-    <!-- Logo -->
-    <a href="index2.html" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>A</b>LT</span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Admin</b>LTE</span>
-    </a>
+  
     <!-- Header Navbar: style can be found in header.less -->
     @include('nav')
-  </header>
+
   <!-- Left side column. contains the logo and sidebar -->
     @include('sidebar')
    
@@ -68,7 +61,7 @@
       <!-- //for css -->
         <!-- /table row stars -->
         <div class="row" style="" id="tabledata" >
-        <div class="col-sm-10 col-md-offset-1">
+        <div class="col-sm-12">
             <table class="table table-striped "  style="max-height: 10%;">
                 <thead>
                     <tr>
@@ -102,7 +95,7 @@
                             <td>{{$i+=1}} </td>
 
                             <td>
-                               <img src="{{ $user->image}}"> 
+                               <img src="{{ $user->image}}" style="width: 100px;"> 
                             </td>
                             <td style=" word-wrap: break-word;">
                             {{$user->name}}
@@ -125,6 +118,7 @@
                     
                 </thead>
             </table>
+           <div class="pull-right"> {{ $amazon->links() }}</div>
         </div>
     </div>
     
